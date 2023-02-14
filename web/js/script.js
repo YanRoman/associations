@@ -1,45 +1,16 @@
 'use strict'
 
-//-------------------------------------------------------DROPDOWN-MENU
-const list = document.querySelector('.dropdown-menu');
-const unload = document.querySelector('.unload');
+const list = document.querySelector('.list');
 async function getProducts(){
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Build Products');
     list.innerHTML = ``
-    let products = await eel.getProducts()();
-    products.forEach((item) => {
-        list.innerHTML += `<li><button class="btn dropdown-item">${item}</button></li>`
-    })
+    let temp = await eel.getProducts()();
+    temp.forEach(element => {
+        console.log(element);
+        list.innerHTML += `<li><button class="btn">${element}</button></li>`
+    });
 }
 
-unload.addEventListener('click', () => {
-    console.log("unload");
-    getProducts();
-})
-
-
-document.querySelectorAll('.dropdown-toggle').forEach(e => {
-    e.addEventListener('click', e => {
-        const menu = e.currentTarget.dataset.path;
-        document.querySelectorAll('.dropdown-menu').forEach(e => {
-            if(!document.querySelector(`[data-target=${menu}]`).classList.contains('open')){
-                document.querySelector(`[data-target=${menu}]`).classList.add('menu-active');
-                setTimeout(() => {
-                    document.querySelector(`[data-target=${menu}]`).classList.add('open')
-                }, 0);
-            }
- 
-            if(document.querySelector(`[data-target=${menu}]`).classList.contains('open')){
-                document.querySelector(`[data-target=${menu}]`).classList.remove('menu-active');
-                setTimeout(() => {
-                    document.querySelector(`[data-target=${menu}]`).classList.remove('open')
-                }, 0);
-            }
-        });
-    });
-});
-//-------------------------------------------------------DROPDOWN-MENU
-
-//-------------------------------------------------------ADD-FILE
 const droparea = document.querySelector('.droparea');
 const svg_dropadrea = document.querySelector('.svg_droparea');
 
@@ -71,10 +42,13 @@ droparea.addEventListener("drop", (e) => {
 });
 
 const upload = (file) => {
-    droparea.setAttribute("class", "droparea valid");
     // droparea.innerText = "added " + file.name;
-    document.querySelector(".newfile").style.display = "none";
-    document.querySelector(".file").style.display = "block";
+    document.querySelector('.main').style.display = 'none';
+    document.querySelector('.results').style.display = 'flex';
+    getProducts();
+    buildRulesTable();
+
+
 
     let reader = new FileReader();
     reader.readAsText(file);
@@ -92,3 +66,20 @@ async function send(data){
 }
 
 //-------------------------------------------------------ADD-FILE
+
+
+const rulesTable = document.querySelector('.rules-table-body');
+async function buildRulesTable(){
+    rulesTable.innerHTML = ``
+    var info = []
+    info = await eel.getInfo()();
+    console.log(info);
+    let i = 0
+    info.forEach(e => {
+        rulesTable.innerHTML += `<tr><td>${i}</td><td>${e[0]}</td><td>${e[1]}</td><td>${e[2]}</td><td>${e[3]}</td><td>${e[4]}</td></tr>`
+        i++;
+    });
+    // await eel.getInfo()().forEach(e =>{
+    //     rulesTable.innerHTML += `<tr><td>${e[0]}</td><td>${e[1]}</td><td>${e[2]}</td><td>${e[3]}</td><td>${e[4]}</td><td>${e[5]}</td></tr>`
+    // });
+}
