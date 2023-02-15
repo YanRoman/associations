@@ -42,14 +42,8 @@ droparea.addEventListener("drop", (e) => {
 });
 
 const upload = (file) => {
-    // droparea.innerText = "added " + file.name;
-    document.querySelector('.main').style.display = 'none';
-    document.querySelector('.results').style.display = 'flex';
     getProducts();
     buildRulesTable();
-
-
-
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onload = function(){
@@ -59,6 +53,8 @@ const upload = (file) => {
     reader.onerror = function(){
         console.log(reader.error);
     }
+    document.querySelector('.main').style.display = 'none';
+    document.querySelector('.results').style.display = 'flex';
 };
 
 async function send(data){
@@ -67,6 +63,12 @@ async function send(data){
 
 //-------------------------------------------------------ADD-FILE
 
+const rulesBtn = querySelector('.rules-btn');
+rulesBtn.addEventListener('click', e=>{
+    rulesTable.style.display = 'block';
+    // tree
+    //if-else
+})
 
 const rulesTable = document.querySelector('.rules-table-body');
 async function buildRulesTable(){
