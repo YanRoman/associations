@@ -1,15 +1,16 @@
 'use strict'
 
-const list = document.querySelector('.list');
 async function getProducts(){
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Build Products');
+    let products = await eel.getProducts()();
     list.innerHTML = ``
-    let temp = await eel.getProducts()();
-    temp.forEach(element => {
+    products.forEach(element => {
         console.log(element);
-        list.innerHTML += `<li><button class="btn">${element}</button></li>`
+        list.innerHTML += `<li class="item"><button class="btn">${element}</button></li>`
     });
 }
+
+const list = document.querySelector('.list');
+
 
 const droparea = document.querySelector('.droparea');
 const svg_dropadrea = document.querySelector('.svg_droparea');
@@ -42,17 +43,18 @@ droparea.addEventListener("drop", (e) => {
 });
 
 const upload = (file) => {
-    getProducts();
-    buildRulesTable();
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onload = function(){
         let data = reader.result;
         send(data);
+        getProducts();
+        buildRulesTable();
     }    
     reader.onerror = function(){
         console.log(reader.error);
     }
+
     document.querySelector('.main').style.display = 'none';
     document.querySelector('.results').style.display = 'flex';
 };
@@ -63,13 +65,7 @@ async function send(data){
 
 //-------------------------------------------------------ADD-FILE
 
-const rulesBtn = querySelector('.rules-btn');
-rulesBtn.addEventListener('click', e=>{
-    rulesTable.style.display = 'block';
-    // tree
-    //if-else
-})
-
+const rulesHead = document.querySelector('.rules-thead');
 const rulesTable = document.querySelector('.rules-table-body');
 async function buildRulesTable(){
     rulesTable.innerHTML = ``
@@ -81,7 +77,27 @@ async function buildRulesTable(){
         rulesTable.innerHTML += `<tr><td>${i}</td><td>${e[0]}</td><td>${e[1]}</td><td>${e[2]}</td><td>${e[3]}</td><td>${e[4]}</td></tr>`
         i++;
     });
-    // await eel.getInfo()().forEach(e =>{
-    //     rulesTable.innerHTML += `<tr><td>${e[0]}</td><td>${e[1]}</td><td>${e[2]}</td><td>${e[3]}</td><td>${e[4]}</td><td>${e[5]}</td></tr>`
-    // });
 }
+
+
+// LIVE SEARCH
+
+document.querySelector('.elastic').oninput = function(){
+    let val = this.value.trim();
+    let items = document.querySelectorAll('.item');
+    if (val != ''){
+        items.forEach(function (e) {
+            if (e.innerText.search(val) == -1){
+                e.classList.add('hide');
+            } else{
+                e.classList.remove('hide');
+            }
+        });
+    }
+    else{
+        items.forEach(function (e) {
+            e.classList.remove('hide');
+        });
+    }
+}
+

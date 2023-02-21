@@ -45,13 +45,31 @@ from itertools import combinations
 # getInfo()
 
 
-arr1 = ['test1', 'test2']
-arr2 = ['test3', 'test1', 'test2']
+# arr1 = ['test1', 'test2']
+# arr2 = ['test3', 'test1', 'test2']
 
-count = 0
-for e in arr1:
-    if e in arr2: count+=1
-if count == len(arr1):
-    print("+")
-else:
-    print('-')
+# count = 0
+# for e in arr1:
+#     if e in arr2: count+=1
+# if count == len(arr1):
+#     print("+")
+# else:
+#     print('-')
+
+
+transactions = {
+    '001' : ['milkshake', 'pie'], 
+    '002' : ['milkshake', 'pie', 'cola']
+}
+products = ['milkshake', 'pie', 'cola']
+
+norm = {}
+
+for transaction in transactions:
+    for product in products:
+        temp = []
+        if product in transaction:
+            temp.append(1)
+        else:
+            temp.append(0)
+    norm[]

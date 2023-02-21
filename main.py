@@ -4,17 +4,18 @@ from itertools import combinations
 
 eel.init("web")
 
-products = []
-transactions = {}
-info = []
-minsupport = 1
-
 
 @eel.expose
 def take_py(dataFile): 
     buildProducts(dataFile)
     buildTransactions(dataFile)
-    buildInfo()
+    buildInfo()  
+
+
+products = []
+transactions = {}
+info = []
+minsupport = 1
 
 
 @eel.expose
@@ -24,16 +25,18 @@ def getProducts():
 
 @eel.expose
 def getInfo():
-    return info
+    return sorted(info, key=lambda item: item[4])[::-1]
 
 
 def buildProducts(data):
+    products.clear()
     for line in data.splitlines():
         if (not line.split()[1] in products):
             products.append(line.split()[1])
 
 
 def buildTransactions(data):
+    transactions.clear()
     lines = data.splitlines()
     temp = []
 
@@ -47,6 +50,7 @@ def buildTransactions(data):
 
 
 def buildInfo():
+    info.clear()
     list = []
     for i in range(1, len(products)):
         list += combinations(products, i)
