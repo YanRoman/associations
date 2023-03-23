@@ -1,3 +1,4 @@
+import timeit
 import eel
 from itertools import combinations
 
@@ -15,7 +16,7 @@ def take_py(dataFile):
 products = []
 transactions = {}
 info = []
-minsupport = 1
+minsupport = 2
 
 
 @eel.expose
@@ -49,12 +50,16 @@ def buildTransactions(data):
             transactions[lines[i].split()[0]] = temp
 
 
+def getList(list, i):
+    if i >= len(products):
+        return list
+    list += combinations(products, i)
+    return getList(list, i+1)
+
 def buildInfo():
     info.clear()
     list = []
-    for i in range(1, len(products)):
-        list += combinations(products, i)
-
+    list = getList(list, 1)
     for A in list:
         for B in list:
             x = 0
@@ -101,6 +106,8 @@ def clearStr(str):
     return str.translate(str.maketrans('', '', chars))
 
 
+elapsed_time = timeit.timeit(buildInfo, number=100)/100
+print(elapsed_time)
 eel.start("main.html")
 
 

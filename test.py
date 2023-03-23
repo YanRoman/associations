@@ -1,75 +1,122 @@
+import timeit
 from itertools import combinations
 
-# transactions = {
-#     '001' : ['milkshake', 'pie'], #3 ^ 3 - 3
-#     '002' : ['milkshake', 'pie', 'cola']
-# }
 
-# products = ['milkshake', 'pie', 'cola']
-
-
-# def getInfo():
-#     list = []
-#     for i in range(1, len(products)):
-#         list += combinations(products, i)
-
-#     for A in list:
-#         for B in list:
-#             x = 0
-#             for elemA in A:
-#                 for elemB in B:
-#                     if elemA == elemB: 
-#                         x += 1
-#                         continue
-#             if x == 0:
-#                 print(str(A) + ' --> ' + str(B))
+def buildProducts(data, products):
+    products.clear()
+    for line in data.splitlines():
+        if (not line.split()[1] in products):
+            products.append(line.split()[1])
 
 
-# getInfo()
-# def getInfo():
-#     for transaction in transactions.values():
-    
-#         for i in range(0, len(transaction)):
-#             for x in range (0, i):
-#                 firstProducts = transaction[x : i] # first products
+def apriori(data, products):
+    apriori_table = {}
+    lines = data.splitlines()
 
-#             for x in range (0, i):
-#                 secodProducts = transaction[x : i] # second products]
-#                 if firstProducts != secodProducts:
-#                     print(str(firstProducts) + ' ---> ' + str(secodProducts))
-
-            
-
-        
-        
-# getInfo()
-
-
-# arr1 = ['test1', 'test2']
-# arr2 = ['test3', 'test1', 'test2']
-
-# count = 0
-# for e in arr1:
-#     if e in arr2: count+=1
-# if count == len(arr1):
-#     print("+")
-# else:
-#     print('-')
-
-
-transactions = {
-    '001' : ['milkshake', 'pie'], 
-    '002' : ['milkshake', 'pie', 'cola']
-}
-products = ['milkshake', 'pie', 'cola']
-
-norm = {}
-
-for transaction in transactions:
-    for product in products:
-        temp = []
-        if product in transaction:
-            temp.append(1)
+    for line in lines:
+        if not line.split()[0] in apriori_table:
+            for product in products:
+                if product == line.split()[1]:
+                    temp = [product]
+            apriori_table[line.split()[0]] = temp
         else:
-            temp.append(0)
-    norm[]
+            for product in products:
+                if product == line.split()[1]:
+                    apriori_table[line.split()[0]].append(product) 
+    return apriori_table    
+
+
+def getF1(products, apriori_table, min):
+    F1 = []
+    for product in products:
+        count = 0
+        for transaction in apriori_table.values():
+            if product in transaction:
+                count += 1
+        if count >= min:
+            F1.append(product)
+    return F1
+
+
+
+def apriorigen(F, k):
+    print(k)
+    for item in F:
+        print(item)
+
+    if k == 1:
+        return combinations(F, 2)
+    else:
+        newF = []
+        for i in F:
+            for j in F:
+                if i[k - 2] == j[k - 2] and i[k - 1] != j[k - 1]:
+                    temp = []
+                    for elem in i:
+                        temp.append(elem)
+                    temp.append(j[k - 1])
+                    newF.append(temp)
+    return newF
+
+
+def alg(F,k, all, apriori_table, min):
+    tempF = apriorigen(F, k)
+    k += 1
+    if k == 5:
+        return
+        
+    newF = []
+    for combination in tempF:
+        count = 0
+        for transaction in apriori_table.values():
+            i = 0
+            for product in combination: 
+                if product in transaction:
+                    i+=1
+            if i == len(combination):
+                count += 1
+        if count >= min:
+            newF.append(combination)
+   
+    for elem in newF:
+        all.append(elem)
+    alg(newF, k, all, apriori_table, min)
+    
+
+
+        
+
+
+
+def main():
+    min = 2
+    data = open('product.txt').read()
+    products = []
+
+    buildProducts(data, products)
+    apriori_table = apriori(data, products)
+
+    for item in apriori_table:
+        print(item, apriori_table[item])
+ 
+    F1 = getF1(products, apriori_table, min)
+    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<F1>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print(F1)
+
+    all = []
+    F = alg(F1, 1, all, apriori_table, min)
+    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ALLLL>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print(len(all))
+
+    print(type(all))
+    
+
+    
+
+main()
+#elapsed_time = timeit.timeit(main, number=100)/100
+#print(elapsed_time)
+
+
+
+
