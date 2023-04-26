@@ -9,7 +9,7 @@ def buildProducts(data, products):
             products.append(line.split()[1])
 
 
-def apriori(data, products):
+def getAprioriTable(data, products):
     apriori_table = {}
     lines = data.splitlines()
 
@@ -23,68 +23,96 @@ def apriori(data, products):
             for product in products:
                 if product == line.split()[1]:
                     apriori_table[line.split()[0]].append(product) 
-    return apriori_table    
+    return apriori_table
 
 
-def getF1(products, apriori_table, min):
-    F1 = []
-    for product in products:
-        count = 0
-        for transaction in apriori_table.values():
-            if product in transaction:
-                count += 1
-        if count >= min:
-            F1.append(product)
-    return F1
+def apriori(F, k, aprioriTable, min):
+    newF = []
 
-
-
-def apriorigen(F, k):
-    print(k)
-    for item in F:
-        print(item)
+    if k == 0:
+        for item in F:
+            count = 0
+            for transaction in aprioriTable.values():
+                if item in transaction:
+                    count += 1
+            if count >= min:
+                newF.append(item)
+        return newF
 
     if k == 1:
-        return combinations(F, 2)
-    else:
-        newF = []
-        for i in F:
-            for j in F:
-                if i[k - 2] == j[k - 2] and i[k - 1] != j[k - 1]:
-                    temp = []
-                    for elem in i:
-                        temp.append(elem)
-                    temp.append(j[k - 1])
-                    newF.append(temp)
-    return newF
+        tempF = []
+        tempF += combinations(F, 2)
+        temp = []
+        for item in tempF:
+            temp += [item[1], item[0]]
+        tempF += temp
 
-
-def alg(F,k, all, apriori_table, min):
-    tempF = apriorigen(F, k)
-    k += 1
-    if k == 5:
-        return
-        
-    newF = []
-    for combination in tempF:
-        count = 0
-        for transaction in apriori_table.values():
-            i = 0
-            for product in combination: 
-                if product in transaction:
-                    i+=1
-            if i == len(combination):
-                count += 1
-        if count >= min:
-            newF.append(combination)
-   
-    for elem in newF:
-        all.append(elem)
-    alg(newF, k, all, apriori_table, min)
+        for combination in tempF:
+            count = 0
+            for transaction in aprioriTable.values():
+                if combination[0] in transaction and combination[1] in transaction:
+                    count += 1
+            if count >= min:
+                newF.append(combination)
+        return newF
     
+    if k == 2:
+        tempF = []
+        for i in range (0, len(F)):
+            for j in range (i + 1, len(F)):
+                if F[i][0] == F[j][0] and F[i][1] != F[j][1]:
+                    temp = [F[i][0], F[i][1], F[j][1]]
+                    tempF.append(temp)
 
-
+        for combination in tempF:
+            count = 0
+            for transaction in aprioriTable.values():
+                if combination[0] in transaction and combination[1] in transaction and combination[2] in transaction:
+                    count += 1
+            if count >= min:
+                newF.append(combination)
+        return newF
         
+    if k == 3:
+        tempF = []
+        for i in range (0, len(F)):
+            for j in range (i + 1, len(F)):
+                if F[i][0] == F[j][0] and F[i][1] == F[j][1] and F[i][2] != F[j][2]:
+                    temp = [F[i][0], F[i][1], F[i][2], F[j][2]]
+                    tempF.append(temp)
+        
+        for combination in tempF:
+            count = 0
+            for transaction in aprioriTable.values():
+                if combination[0] in transaction and combination[1] in transaction and combination[2] in transaction:
+                    count += 1
+            if count >= min:
+                newF.append(combination)
+        return newF 
+    
+    # for i in range (0, len(F)):
+    #     for j in range (i + 1, len(F)):
+    #         flag = True
+    #         for m in range(0, k - 2):
+    #             if F[i][m] != F[j][m]:
+    #                 flag = False
+    #         if F[i][k-1] == F[j][k-1]:
+    #             flag = False
+    #         if flag:
+    #             temp = []
+    #             for m in range(0, k - 2):
+    #                 temp.append(F[i][m])
+    #             temp.append(F[i][k-1])
+    #             temp.append(F[j][k-1])
+                
+    #     for combination in tempF:
+    #         count = 0
+    #         for transaction in aprioriTable.values():
+    #             if combination[0] in transaction and combination[1] in transaction and combination[2] in transaction:
+    #                 count += 1
+    #         if count >= min:
+    #             newF.append(combination)
+    #     return newF 
 
 
 
@@ -94,24 +122,17 @@ def main():
     products = []
 
     buildProducts(data, products)
-    apriori_table = apriori(data, products)
+    aprioriTable = getAprioriTable(data, products)
 
-    for item in apriori_table:
-        print(item, apriori_table[item])
- 
-    F1 = getF1(products, apriori_table, min)
-    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<F1>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    print(F1)
-
-    all = []
-    F = alg(F1, 1, all, apriori_table, min)
-    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ALLLL>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    print(len(all))
-
-    print(type(all))
+    F1 = apriori(products, 0, aprioriTable, min)
+    F2 = apriori(F1, 1, aprioriTable, min)
+    F3 = apriori(F2, 2, aprioriTable, min)
+    F4 = apriori(F3, 3, aprioriTable, min)
     
-
-    
+    print('<<<<<<<<<<<<<<<<<<<<<<F1', F1)
+    print('<<<<<<<<<<<<<<<<<<<<<<F2', F2)
+    print('<<<<<<<<<<<<<<<<<<<<<<F3', F3)
+    print('<<<<<<<<<<<<<<<<<<<<<<F4', F4)
 
 main()
 #elapsed_time = timeit.timeit(main, number=100)/100
